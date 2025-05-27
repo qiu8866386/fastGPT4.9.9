@@ -164,7 +164,7 @@ const NodeTemplateListHeader = ({
               <MyIcon name={'common/rightArrowLight'} w={'0.8rem'} />
             </Flex>
           )}
-          {!isPopover &&
+          {/* {!isPopover &&
             templateType === TemplateTypeEnum.systemPlugin &&
             feConfigs.systemPluginCourseUrl && (
               <Flex
@@ -181,7 +181,7 @@ const NodeTemplateListHeader = ({
                 <Box>{t('common:plugin.contribute')}</Box>
                 <MyIcon name={'common/rightArrowLight'} w={'0.8rem'} />
               </Flex>
-            )}
+            )} */}
         </Flex>
       )}
       {/* paths */}

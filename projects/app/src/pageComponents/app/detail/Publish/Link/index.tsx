@@ -78,7 +78,7 @@ const Share = ({ appId }: { appId: string; type: PublishChannelEnum }) => {
           <Box color={'myGray.900'} fontSize={'lg'}>
             {t('common:core.app.Share link')}
           </Box>
-          <QuestionTip label={t('common:core.app.Share link desc detail')} />
+          {/* <QuestionTip label={t('common:core.app.Share link desc detail')} /> */}
         </HStack>
         <Button
           variant={'whitePrimary'}
