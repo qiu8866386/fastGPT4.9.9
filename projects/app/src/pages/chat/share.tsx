@@ -37,10 +37,17 @@ import { useChatStore } from '@/web/core/chat/context/useChatStore';
 import { ChatSourceEnum } from '@fastgpt/global/core/chat/constants';
 import { useI18nLng } from '@fastgpt/web/hooks/useI18n';
 import { type AppSchema } from '@fastgpt/global/core/app/type';
+import { log } from 'console';
+import { Spinner, Text } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import ChatQuoteList from '@/pageComponents/chat/ChatQuoteList';
 import { useToast } from '@fastgpt/web/hooks/useToast';
 
+import { createContext } from 'react';
+import { MessageProvider, useMessageContext } from '@/context/MessageContext';
 const CustomPluginRunBox = dynamic(() => import('@/pageComponents/chat/CustomPluginRunBox'));
+// 定义一个上下文
+export const MessageContext = createContext({});
 
 type Props = {
   appId: string;
@@ -55,6 +62,50 @@ type Props = {
   // showFullText: boolean;
   showNodeStatus: boolean;
 };
+// const checkAuthToken = () => {
+//   const match = document.cookie.match(new RegExp('(^| )FastgptKey=([^;]+)'));
+//   const authToken = match ? match[2] : null;
+
+//   console.log('authToken:', authToken);
+
+//   if (!authToken) {
+//     // window.location.href = 'http://121.37.224.213:13090/login'; // 为空时跳转
+//   }
+// };
+
+//  const [customVar1, setCustomVar1] = useState({ deep: 0, selectedValue: 'No_Knowledge' });
+// useEffect(() => {
+//   // 先执行一次
+//   checkAuthToken();
+
+//   // 每 2 分钟检查一次
+//   const intervalId = setInterval(checkAuthToken, 160000);
+
+//   // 组件卸载时清除定时器
+//   return () => clearInterval(intervalId);
+// }, []);
+
+// const [fixedCustomUid, setFixedCustomUid] = useState<string | null>(null);
+// const [message, setMessage] = useState(1);
+
+// useEffect(() => {
+//   async function fetchUserOutLink() {
+//     try {
+//       const match = document.cookie.match(new RegExp('(^| )FastgptKey=([^;]+)'));
+//       const authToken = match ? match[2] : null;
+
+//       const res = await fetch(`/api/histories/list?userid=${authToken}`);
+//       const data = await res.json();
+//       console.log(data);
+//       setFixedCustomUid(data.data.outlinksid); // 更新状态
+//       console.log('fixedCustomUid:', data.data.outlinksid);
+//     } catch (error) {
+//       console.error('获取用户 OutLink 失败:', error);
+//     }
+//   }
+
+//   fetchUserOutLink();
+// }, []);
 
 const OutLink = (props: Props) => {
   const { t } = useTranslation();
@@ -92,6 +143,58 @@ const OutLink = (props: Props) => {
   const chatRecords = useContextSelector(ChatRecordContext, (v) => v.chatRecords);
   const totalRecordsCount = useContextSelector(ChatRecordContext, (v) => v.totalRecordsCount);
   const isChatRecordsLoaded = useContextSelector(ChatRecordContext, (v) => v.isChatRecordsLoaded);
+
+  // 定时检查 cookie 中的 authToken
+  const checkAuthToken = () => {
+    const match = document.cookie.match(new RegExp('(^| )FastgptKey=([^;]+)'));
+    const authToken = match ? match[2] : null;
+
+    console.log('authToken:', authToken);
+
+    if (!authToken) {
+      // window.location.href = 'http://121.37.224.213:13090/login'; // 为空时跳转
+      // window.location.href = 'http://192.168.1.6:80/login'; // 为空时跳转
+      // window.location.href = 'https://openui.csic.cn/login'; // 为空时跳转
+      // window.location.href = 'http://192.168.10.92:13090/login'; // 为空时跳转
+      // window.location.href = 'https://alex.csic.cn/login'; // 为空时跳转
+    }
+  };
+
+  const [customVar1, setCustomVar1] = useState({ deep: 0, selectedValue: 'No_Knowledge' });
+
+  // 跳转登录的一个东西
+  useEffect(() => {
+    // 先执行一次
+    checkAuthToken();
+
+    // 每 2 分钟检查一次
+    const intervalId = setInterval(checkAuthToken, 160000);
+
+    // 组件卸载时清除定时器
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const [fixedCustomUid, setFixedCustomUid] = useState<string | null>(null);
+  const [message, setMessage] = useState(1);
+
+  useEffect(() => {
+    async function fetchUserOutLink() {
+      try {
+        const match = document.cookie.match(new RegExp('(^| )FastgptKey=([^;]+)'));
+        const authToken = match ? match[2] : null;
+
+        const res = await fetch(`/api/histories/list?userid=${authToken}`);
+        const data = await res.json();
+        console.log(data);
+        setFixedCustomUid(data.data.outlinksid); // 更新状态
+        console.log('fixedCustomUid:', data.data.outlinksid);
+      } catch (error) {
+        console.error('获取用户 OutLink 失败:', error);
+      }
+    }
+
+    fetchUserOutLink();
+  }, []);
 
   const initSign = useRef(false);
   const { data, loading } = useRequest2(
@@ -159,7 +262,9 @@ const OutLink = (props: Props) => {
           messages: histories,
           variables: {
             ...variables,
-            ...customVariables
+            ...customVariables,
+            DeepThink: customVar1.deep, // 添加自定义变量到请求体
+            Knowledge: customVar1.selectedValue || 'No_Knowledge'
           },
           responseChatItemId,
           chatId: completionChatId,
@@ -242,146 +347,284 @@ const OutLink = (props: Props) => {
       </Drawer>
     );
   }, [isOpenSlider, isPc, onCloseSlider, datasetCiteData, showHistory, t]);
+  function UserComponent() {
+    // 获取context值
+    const { message, setMessage } = useMessageContext();
+
+    setCustomVar1(message as any);
+
+    console.log('1111111', customVar1);
+
+    return (
+      <div>
+        <p>当前深度: {message.deep}</p>
+        <p>选择的值: {message.selectedValue}</p>
+      </div>
+    );
+  }
 
   return (
-    <>
+    // <>
+    //   <NextHead
+    //     title={props.appName || data?.app?.name || 'AI'}
+    //     desc={props.appIntro || data?.app?.intro}
+    //     icon={props.appAvatar || data?.app?.avatar}
+    //   />
+    //   <Flex
+    //     h={'full'}
+    //     gap={4}
+    //     {...(isEmbed ? { p: '0 !important', borderRadius: '0', boxShadow: 'none' } : { p: [0, 0] })}
+    //   >
+    //     {(!datasetCiteData || isPc) && (
+    //       <PageContainer flex={'1 0 0'} w={0} p={'0 !important'}>
+    //         <Flex
+    //           h={'100%'}
+    //           flexDirection={['column', 'row']}
+    //           backgroundColor={'red'}
+    //           style={{ borderRadius: '0 !important' }}
+    //         >
+    //           {RenderHistoryList}
+
+    //           {/* chat container */}
+    //           <Flex
+    //             position={'relative'}
+    //             h={[0, '100%']}
+    //             w={['100%', 0]}
+    //             flex={'1 0 0'}
+    //             flexDirection={'column'}
+    //           >
+    //             {/* header */}
+    //             {showHead === '1' ? (
+    //               <ChatHeader
+    //                 history={chatRecords}
+    //                 totalRecordsCount={totalRecordsCount}
+    //                 showHistory={showHistory === '1'}
+    //               />
+    //             ) : null}
+    //             {/* chat box */}
+    //             <Box flex={1} bg={'white'}>
+    //               {isPlugin ? (
+    //                 <CustomPluginRunBox
+    //                   appId={appId}
+    //                   chatId={chatId}
+    //                   outLinkAuthData={outLinkAuthData}
+    //                   onNewChat={() => onChangeChatId(getNanoid())}
+    //                   onStartChat={startChat}
+    //                 />
+    //               ) : (
+    //                 <ChatBox
+    //                   isReady={!loading}
+    //                   appId={appId}
+    //                   chatId={chatId}
+    //                   outLinkAuthData={outLinkAuthData}
+    //                   feedbackType={'user'}
+    //                   onStartChat={startChat}
+    //                   chatType="share"
+    //                 />
+    //               )}
+    //             </Box>
+    //           </Flex>
+    //         </Flex>
+    //       </PageContainer>
+    //     )}
+
+    //     {datasetCiteData && (
+    //       <PageContainer flex={'1 0 0'} w={0} maxW={'560px'} p={'0 !important'}>
+    //         <ChatQuoteList
+    //           rawSearch={datasetCiteData.rawSearch}
+    //           metadata={datasetCiteData.metadata}
+    //           onClose={() => setCiteModalData(undefined)}
+    //         />
+    //       </PageContainer>
+    //     )}
+    //   </Flex>
+    // </>
+
+    <MessageProvider>
+      <div style={{ display: 'none' }}>
+        <UserComponent />
+      </div>
       <NextHead
         title={props.appName || data?.app?.name || 'AI'}
         desc={props.appIntro || data?.app?.intro}
         icon={props.appAvatar || data?.app?.avatar}
       />
-      <Flex
-        h={'full'}
-        gap={4}
-        {...(isEmbed ? { p: '0 !important', borderRadius: '0', boxShadow: 'none' } : { p: [0, 0] })}
+      <PageContainer
+        isLoading={loading}
+        {...(isEmbed
+          ? //取消页面内边距和圆角
+            { p: '0 !important', insertProps: { borderRadius: '0', boxShadow: 'none' } }
+          : { p: [0, 0], insertProps: { borderRadius: '0', boxShadow: 'none' } })}
       >
-        {(!datasetCiteData || isPc) && (
-          <PageContainer flex={'1 0 0'} w={0} p={'0 !important'}>
-            <Flex
-              h={'100%'}
-              flexDirection={['column', 'row']}
-              backgroundColor={'red'}
-              style={{ borderRadius: '0 !important' }}
+        <Flex h={'100%'} flexDirection={['column', 'row']}>
+          {RenderHistoryList}
+
+          {/* chat container */}
+          <Flex
+            position={'relative'}
+            h={[0, '100%']}
+            w={['100%', 0]}
+            flex={'1 0 0'}
+            flexDirection={'column'}
+          >
+            {/* header */}
+            {showHead === '1' ? (
+              <ChatHeader
+                history={chatRecords}
+                totalRecordsCount={totalRecordsCount}
+                showHistory={showHistory === '1'}
+              />
+            ) : null}
+
+            {/* <Button onClick={handleToggleVariable} colorScheme="blue" size="sm" ml={4}>
+                当前值: {customVar1}
+            </Button> */}
+
+            {/* chat box */}
+            <Box
+              flex={1}
+              bg={'#fff'}
+              shadow="0 4px 12px -6px rgba(0, 0, 0, 0.12)"
+              sx={{
+                '&:hover': {
+                  shadow: '0 6px 18px -8px rgba(0, 0, 0, 0.15)'
+                }
+              }}
+              transition="box-shadow 0.2s ease-in-out"
             >
-              {RenderHistoryList}
-
-              {/* chat container */}
-              <Flex
-                position={'relative'}
-                h={[0, '100%']}
-                w={['100%', 0]}
-                flex={'1 0 0'}
-                flexDirection={'column'}
-              >
-                {/* header */}
-                {showHead === '1' ? (
-                  <ChatHeader
-                    history={chatRecords}
-                    totalRecordsCount={totalRecordsCount}
-                    showHistory={showHistory === '1'}
-                  />
-                ) : null}
-                {/* chat box */}
-                <Box flex={1} bg={'white'}>
-                  {isPlugin ? (
-                    <CustomPluginRunBox
-                      appId={appId}
-                      chatId={chatId}
-                      outLinkAuthData={outLinkAuthData}
-                      onNewChat={() => onChangeChatId(getNanoid())}
-                      onStartChat={startChat}
-                    />
-                  ) : (
-                    <ChatBox
-                      isReady={!loading}
-                      appId={appId}
-                      chatId={chatId}
-                      outLinkAuthData={outLinkAuthData}
-                      feedbackType={'user'}
-                      onStartChat={startChat}
-                      chatType="share"
-                    />
-                  )}
-                </Box>
-              </Flex>
-            </Flex>
-          </PageContainer>
-        )}
-
-        {datasetCiteData && (
-          <PageContainer flex={'1 0 0'} w={0} maxW={'560px'} p={'0 !important'}>
-            <ChatQuoteList
-              rawSearch={datasetCiteData.rawSearch}
-              metadata={datasetCiteData.metadata}
-              onClose={() => setCiteModalData(undefined)}
-            />
-          </PageContainer>
-        )}
-      </Flex>
-    </>
+              {isPlugin ? (
+                <CustomPluginRunBox
+                  appId={appId}
+                  chatId={chatId}
+                  outLinkAuthData={outLinkAuthData}
+                  onNewChat={() => onChangeChatId(getNanoid())}
+                  onStartChat={startChat}
+                />
+              ) : (
+                <ChatBox
+                  isReady={!loading}
+                  appId={appId}
+                  chatId={chatId}
+                  outLinkAuthData={outLinkAuthData}
+                  feedbackType={'user'}
+                  onStartChat={startChat}
+                  chatType="share"
+                />
+              )}
+            </Box>
+          </Flex>
+        </Flex>
+      </PageContainer>
+    </MessageProvider>
   );
 };
 
-const Render = (props: Props) => {
+function Render(props: Props) {
+  const { shareId, authToken } = props;
   const { t } = useTranslation();
   const { toast } = useToast();
-  const { shareId, authToken, customUid, appId } = props;
+  // const { shareId, authToken, customUid, appId } = props;
   const { localUId, setLocalUId, loaded } = useShareChatStore();
   const { source, chatId, setSource, setAppId, setOutLinkAuthData } = useChatStore();
   const { setUserDefaultLng } = useI18nLng();
 
-  const chatHistoryProviderParams = useMemo(() => {
-    return { shareId, outLinkUid: authToken || customUid || localUId || '' };
-  }, [authToken, customUid, localUId, shareId]);
-  const chatRecordProviderParams = useMemo(() => {
-    return {
-      appId,
-      shareId,
-      outLinkUid: chatHistoryProviderParams.outLinkUid,
-      chatId,
-      type: GetChatTypeEnum.outLink
-    };
-  }, [appId, chatHistoryProviderParams.outLinkUid, chatId, shareId]);
+  // const chatHistoryProviderParams = useMemo(() => {
+  //   return { shareId, outLinkUid: authToken || customUid || localUId || '' };
+  // }, [authToken, customUid, localUId, shareId]);
+  // const chatRecordProviderParams = useMemo(() => {
+  //   return {
+  //     appId,
+  //     shareId,
+  //     outLinkUid: chatHistoryProviderParams.outLinkUid,
+  //     chatId,
+  //     type: GetChatTypeEnum.outLink
+  //   };
+  // }, [appId, chatHistoryProviderParams.outLinkUid, chatId, shareId]);
+
+  // 存放接口返回的 outLinkUid
+  const [fixedCustomUid, setFixedCustomUid] = useState<string | null>(null);
+  // 用于判断是否正在加载 outLinkUid
+  const [loadingUid, setLoadingUid] = useState(true);
 
   useMount(() => {
     setSource('share');
     setUserDefaultLng(true);
   });
 
-  // Set default localUId
+  // 这里在组件挂载时请求用户的 outLinkUid
   useEffect(() => {
-    if (loaded) {
-      if (!localUId) {
-        setLocalUId(`shareChat-${Date.now()}-${getNanoid(24)}`);
+    async function fetchUserOutLink() {
+      try {
+        const match = document.cookie.match(new RegExp('(^| )FastgptKey=([^;]+)'));
+        const authToken = match ? match[2] : null;
+        console.log('authToken:', authToken);
+
+        const res = await fetch(`/api/histories/list?userid=${authToken}`);
+        const data = await res.json();
+
+        console.log('outlinksid:', data.data.outlinksid);
+        // 拿到 outlinksid
+        setFixedCustomUid(data.data.outlinksid);
+      } catch (error) {
+        console.error('获取用户 OutLink 失败:', error);
+      } finally {
+        // 不管成功或失败都要把 loadingUid 置为 false
+        setLoadingUid(false);
       }
     }
-  }, [loaded, localUId, setLocalUId]);
+    fetchUserOutLink();
+  }, []);
 
-  // Init outLinkAuthData
+  // 先根据 fixedCustomUid / authToken / localUId 等组合出最终的 outLinkUid
+  const outLinkUid = fixedCustomUid || authToken || '';
+
+  // 在拿到 outLinkUid 之后，再设置到全局的 outLinkAuthData
   useEffect(() => {
-    if (chatHistoryProviderParams.outLinkUid) {
-      setOutLinkAuthData({
-        shareId,
-        outLinkUid: chatHistoryProviderParams.outLinkUid
-      });
-    }
+    setOutLinkAuthData({ shareId, outLinkUid });
     return () => {
+      // 卸载时清空
       setOutLinkAuthData({});
     };
-  }, [chatHistoryProviderParams.outLinkUid, setOutLinkAuthData, shareId]);
+  }, [shareId, outLinkUid, setOutLinkAuthData]);
 
-  // Watch appId
+  // 也可以在这里设置 appId
   useEffect(() => {
-    setAppId(appId);
-  }, [appId, setAppId]);
-  useMount(() => {
-    if (!appId) {
-      toast({
-        status: 'warning',
-        title: t('chat:invalid_share_url')
-      });
-    }
-  });
+    setAppId(props.appId);
+  }, [props.appId, setAppId]);
+
+  // 如果还在加载 outLinkUid，就先渲染一个 loading
+  if (loadingUid) {
+    return (
+      <Flex
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        w="100vw"
+        h="100vh"
+        bg="white"
+      >
+        {/* Spinner 自带动画效果，可以根据需要调整大小和颜色 */}
+        <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" />
+        <Text mt={4} fontSize="lg" color="gray.600">
+          Loading...
+        </Text>
+      </Flex>
+    );
+  }
+
+  // outLinkUid 拿到后，再去渲染 ChatContextProvider
+  const chatHistoryProviderParams = {
+    shareId,
+    outLinkUid
+  };
+
+  const chatRecordProviderParams = {
+    appId: props.appId,
+    shareId,
+    outLinkUid,
+    chatId,
+    type: GetChatTypeEnum.outLink
+  };
 
   return source === ChatSourceEnum.share ? (
     <ChatContextProvider params={chatHistoryProviderParams}>
@@ -401,7 +644,7 @@ const Render = (props: Props) => {
   ) : (
     <NextHead title={props.appName} desc={props.appIntro} icon={props.appAvatar} />
   );
-};
+}
 
 export default React.memo(Render);
 
