@@ -275,19 +275,19 @@ export const PcHeader = ({
       <Box mr={3} maxW={'200px'} className="textEllipsis" color={'myGray.1000'}>
         {title}
       </Box>
-      <MyTag>
-        <MyIcon bg={'rgba(0, 0, 0, 0.04)'} boxShadow="0 1px 3px rgba(0, 0, 0, 0.1)" />
+      <MyTag bg={'rgba(0, 0, 0, 0.04)'} boxShadow="0 1px 3px rgba(0, 0, 0, 0.1)">
+        {/* <MyIcon name={'history'} w={'14px'} /> */}
+        {/* <Box ml={1}>
+          {totalRecordsCount === 0
+            ? t('common:core.chat.New Chat')
+            : t('common:core.chat.History Amount', { amount: totalRecordsCount })}
+        </Box> */}
+
         <Box ml={1} color={'#000'}>
           {totalRecordsCount === 0
             ? t('common:core.chat.History Amount', { amount: 0 })
             : t('common:core.chat.History Amount', { amount: totalRecordsCount })}
         </Box>
-        {/* <MyIcon name={'history'} w={'14px'} />
-        <Box ml={1}>
-          {totalRecordsCount === 0
-            ? t('common:core.chat.New Chat')
-            : t('common:core.chat.History Amount', { amount: totalRecordsCount })}
-        </Box> */}
       </MyTag>
       {!!chatModels && chatModels.length > 0 && (
         <MyTooltip label={chatModels.join(',')}>
