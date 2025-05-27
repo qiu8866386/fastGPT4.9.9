@@ -347,7 +347,7 @@ const ChatItem = (props: Props) => {
         >
           <Card
             {...MessageCardStyle}
-            bg={styleMap.bg}
+            bg={type === ChatRoleEnum.Human ? '#f9f9f9' : '#ffffff'}
             borderRadius={styleMap.borderRadius}
             textAlign={'left'}
           >

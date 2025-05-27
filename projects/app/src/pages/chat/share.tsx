@@ -253,11 +253,16 @@ const OutLink = (props: Props) => {
       <Flex
         h={'full'}
         gap={4}
-        {...(isEmbed ? { p: '0 !important', borderRadius: '0', boxShadow: 'none' } : { p: [0, 5] })}
+        {...(isEmbed ? { p: '0 !important', borderRadius: '0', boxShadow: 'none' } : { p: [0, 0] })}
       >
         {(!datasetCiteData || isPc) && (
           <PageContainer flex={'1 0 0'} w={0} p={'0 !important'}>
-            <Flex h={'100%'} flexDirection={['column', 'row']}>
+            <Flex
+              h={'100%'}
+              flexDirection={['column', 'row']}
+              backgroundColor={'red'}
+              style={{ borderRadius: '0 !important' }}
+            >
               {RenderHistoryList}
 
               {/* chat container */}

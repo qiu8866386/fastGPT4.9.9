@@ -244,8 +244,8 @@ const ChatInput = ({
             flexShrink={0}
             h={['28px', '32px']}
             w={['28px', '32px']}
-            borderRadius={'md'}
-            bg={isChatting ? '' : !havInput || hasFileUploading ? '#E5E5E5' : 'primary.500'}
+            borderRadius={'50%'}
+            bg={isChatting ? '' : !havInput || hasFileUploading ? '#000' : '#000'}
             cursor={havInput ? 'pointer' : 'not-allowed'}
             lineHeight={1}
             onClick={() => {
@@ -302,9 +302,9 @@ const ChatInput = ({
 
   return (
     <Box
-      m={['0 auto', '10px auto']}
+      m={['0 auto', '20px auto']}
       w={'100%'}
-      maxW={['auto', 'min(800px, 100%)']}
+      maxW={['auto', 'min(90%, 100%)']}
       px={[0, 5]}
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e) => {

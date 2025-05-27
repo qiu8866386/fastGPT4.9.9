@@ -85,8 +85,8 @@ const ChatHistorySlider = ({ confirmClearText }: { confirmClearText: string }) =
       flexDirection={'column'}
       w={'100%'}
       h={'100%'}
-      bg={'white'}
-      borderRight={['', theme.borders.base]}
+      bg={'#F9F9F9'}
+      // borderRight={['', theme.borders.base]}
       whiteSpace={'nowrap'}
     >
       {isPc && (
@@ -117,7 +117,7 @@ const ChatHistorySlider = ({ confirmClearText }: { confirmClearText: string }) =
       {/* menu */}
       <Flex
         w={'100%'}
-        px={[2, 5]}
+        px={[2, 3]}
         h={'36px'}
         my={5}
         justify={['space-between', '']}
@@ -135,41 +135,63 @@ const ChatHistorySlider = ({ confirmClearText }: { confirmClearText: string }) =
         <Button
           variant={'whitePrimary'}
           flex={['0 0 auto', 1]}
+          boxShadow="0 1px 3px rgba(0, 0, 0, 0.1)"
           h={'100%'}
           px={6}
-          color={'primary.600'}
-          borderRadius={'xl'}
-          leftIcon={<MyIcon name={'core/chat/chatLight'} w={'16px'} />}
-          overflow={'hidden'}
-          onClick={() => {
-            onChangeChatId();
-            setCiteModalData(undefined);
+          borderRadius={'10px'}
+          border={'none'}
+          color={'black'}
+          bg={'white'}
+          sx={{
+            overflow: 'hidden',
+            // border: '0.5px solid #ccc', // 使用0.5px实现超细边框
+            '&:hover': {
+              bg: 'rgba(0, 0, 0, 0.04)',
+              color: 'black',
+              borderColor: '#CCE8FF',
+              borderWidth: '0.5px' // 保持hover时同样细的边框
+            }
           }}
+          leftIcon={<MyIcon name={'core/chat/chatLight'} w={'16px'} color={'black'} />}
+          onClick={() => onChangeChatId()}
         >
           {t('common:core.chat.New Chat')}
         </Button>
         {/* Clear */}
-        {isPc && histories.length > 0 && (
-          <PopoverConfirm
-            Trigger={
-              <Box ml={3} h={'100%'}>
-                <IconButton
-                  variant={'whiteDanger'}
-                  size={'mdSquare'}
-                  aria-label={''}
-                  borderRadius={'50%'}
-                  icon={<MyIcon name={'common/clearLight'} w={'16px'} />}
-                />
-              </Box>
+        {/* 删除按钮 */}
+        {/* {isPc && histories.length > 0 && (
+          <IconButton
+            ml={2}
+            bg={'white'}
+            border={'none'}
+            h={'100%'}
+            variant={'whiteDanger'}
+            size={'mdSquare'}
+            boxShadow="0 1px 3px rgba(0, 0, 0, 0.1)"
+            aria-label={''}
+            // borderRadius={'90%'}
+            borderRadius={'10px'}
+            sx={{
+              overflow: 'hidden',
+              // border: '0.5px solid #ccc', // 使用0.5px实现超细边框
+              '&:hover': {
+                bg: 'rgba(0, 0, 0, 0.04)',
+                color: 'black',
+                borderColor: '#CCE8FF',
+                borderWidth: '0.5px' // 保持hover时同样细的边框
+              }
+            }}
+            icon={<MyIcon name={'common/clearLight'} w={'18px'} />}
+            onClick={() =>
+              openConfirm(() => {
+                onClearHistory();
+              })()
             }
-            type="delete"
-            content={confirmClearText}
-            onConfirm={() => onClearHistory()}
           />
-        )}
+        )} */}
       </Flex>
 
-      <ScrollData flex={'1 0 0'} h={0} px={[2, 5]} overflow={'overlay'}>
+      <ScrollData flex={'1 0 0'} h={0} px={[2, 3]} overflow={'overlay'}>
         {/* chat history */}
         <>
           {concatHistory.map((item, i) => (
@@ -182,9 +204,9 @@ const ChatHistorySlider = ({ confirmClearText }: { confirmClearText: string }) =
               cursor={'pointer'}
               userSelect={'none'}
               borderRadius={'md'}
-              fontSize={'sm'}
+              fontSize={'14px'}
               _hover={{
-                bg: 'myGray.50',
+                bg: 'rgba(0, 0, 0, 0.04)',
                 '& .more': {
                   display: 'block'
                 },
@@ -192,11 +214,11 @@ const ChatHistorySlider = ({ confirmClearText }: { confirmClearText: string }) =
                   display: isPc ? 'none' : 'block'
                 }
               }}
-              bg={item.top ? '#E6F6F6 !important' : ''}
+              bg={item.top ? 'rgba(0, 0, 0, 0.04) !important' : ''}
               {...(item.id === activeChatId
                 ? {
-                    backgroundColor: 'primary.50 !important',
-                    color: 'primary.600'
+                    backgroundColor: 'rgba(0, 0, 0, 0.04) !important',
+                    color: '#000'
                   }
                 : {
                     onClick: () => {
@@ -208,10 +230,10 @@ const ChatHistorySlider = ({ confirmClearText }: { confirmClearText: string }) =
                 mb: '8px'
               })}
             >
-              <MyIcon
+              {/* <MyIcon
                 name={item.id === activeChatId ? 'core/chat/chatFill' : 'core/chat/chatLight'}
                 w={'16px'}
-              />
+              /> */}
               <Box flex={'1 0 0'} ml={3} className="textEllipsis">
                 {item.customTitle || item.title}
               </Box>

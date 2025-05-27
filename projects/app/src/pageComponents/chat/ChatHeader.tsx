@@ -52,6 +52,7 @@ const ChatHeader = ({
       borderBottom={'sm'}
       color={'myGray.900'}
       fontSize={'sm'}
+      background={'white'} // 添加背景颜色
     >
       {isPc ? (
         <>
@@ -275,12 +276,18 @@ export const PcHeader = ({
         {title}
       </Box>
       <MyTag>
-        <MyIcon name={'history'} w={'14px'} />
+        <MyIcon bg={'rgba(0, 0, 0, 0.04)'} boxShadow="0 1px 3px rgba(0, 0, 0, 0.1)" />
+        <Box ml={1} color={'#000'}>
+          {totalRecordsCount === 0
+            ? t('common:core.chat.History Amount', { amount: 0 })
+            : t('common:core.chat.History Amount', { amount: totalRecordsCount })}
+        </Box>
+        {/* <MyIcon name={'history'} w={'14px'} />
         <Box ml={1}>
           {totalRecordsCount === 0
             ? t('common:core.chat.New Chat')
             : t('common:core.chat.History Amount', { amount: totalRecordsCount })}
-        </Box>
+        </Box> */}
       </MyTag>
       {!!chatModels && chatModels.length > 0 && (
         <MyTooltip label={chatModels.join(',')}>

@@ -45,6 +45,12 @@ const LoginForm = ({ setPageType, loginSuccess }: Props) => {
         title: t('login:login_success'),
         status: 'success'
       });
+
+      if (username == 'root') {
+        localStorage.setItem('root', 'true');
+      } else {
+        localStorage.setItem('root', 'false');
+      }
     },
     {
       refreshDeps: [loginSuccess]
