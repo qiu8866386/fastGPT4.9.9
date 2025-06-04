@@ -195,7 +195,7 @@ const Chat = ({ myApps }: { myApps: AppListItemType[] }) => {
               />
 
               {/* chat box */}
-              <Box flex={'1 0 0'} bg={'white'}>
+              <Box flex={'1 0 0'} bg={'#000'}>
                 {isPlugin ? (
                   <CustomPluginRunBox
                     appId={appId}
