@@ -84,9 +84,14 @@ export const updateContact = (data: { contact: string; verifyCode: string }) => 
   return PUT('/proApi/support/user/account/updateContact', data);
 };
 
-export const postLogin = ({ password, ...props }: PostLoginProps) =>
+// export const postLogin = ({ password, ...props }: PostLoginProps) =>
+//   POST<ResLogin>('/support/user/account/loginByPassword', {
+//     ...props,
+//     password: hashStr(password)
+//   });
+export const postLogin = ({ username, password }: { username: string; password: string }) =>
   POST<ResLogin>('/support/user/account/loginByPassword', {
-    ...props,
+    username,
     password: hashStr(password)
   });
 

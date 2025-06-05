@@ -17,18 +17,22 @@ import { createUserSession } from '@fastgpt/service/support/user/session';
 import requestIp from 'request-ip';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { username, password, code } = req.body as PostLoginProps;
+  // const { username, password, code } = req.body as PostLoginProps;
+  const { username, password } = req.body as PostLoginProps;
 
-  if (!username || !password || !code) {
+  // if (!username || !password || !code) {
+  //   return Promise.reject(CommonErrEnum.invalidParams);
+  // }
+  if (!username || !password) {
     return Promise.reject(CommonErrEnum.invalidParams);
   }
 
   // Auth prelogin code
-  await authCode({
-    key: username,
-    code,
-    type: UserAuthTypeEnum.login
-  });
+  // await authCode({
+  //   key: username,
+  //   code,
+  //   type: UserAuthTypeEnum.login
+  // });
 
   // 检测用户是否存在
   const authCert = await MongoUser.findOne(
