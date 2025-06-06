@@ -112,15 +112,18 @@ const Navbar = ({ unread }: { unread: number }) => {
         ]
       }
     ];
-    // 管理员：返回完整菜单
-    if (menuControl) {
-      return fullNavbarList;
-    }
-    // 非管理员：保留 "知识库" (Datasets) 和 应用
-    else {
-      return fullNavbarList.filter((item) => item.label === t('common:navbar.Datasets'));
-    }
-  }, [lastChatAppId, t, menuControl]);
+    const fullNavbarList1 = [
+      // 导航栏
+      {
+        label: t('common:navbar.Datasets'),
+        icon: 'core/dataset/datasetLight',
+        activeIcon: 'core/dataset/datasetFill',
+        link: `/dataset/list`,
+        activeLink: ['/dataset/list', '/dataset/detail']
+      }
+    ];
+    return menuControl ? fullNavbarList : fullNavbarList1;
+  }, [t, menuControl]);
 
   const isSecondNavbarPage = useMemo(() => {
     return ['/toolkit'].includes(router.pathname);

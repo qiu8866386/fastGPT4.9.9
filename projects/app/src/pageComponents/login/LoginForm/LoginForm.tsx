@@ -33,12 +33,12 @@ const LoginForm = ({ setPageType, loginSuccess }: Props) => {
 
   const { runAsync: onclickLogin, loading: requesting } = useRequest2(
     async ({ username, password }: LoginFormType) => {
-      const { code } = await getPreLogin(username);
+      // const { code } = await getPreLogin(username);
       loginSuccess(
         await postLogin({
           username,
-          password,
-          code
+          password
+          // code
         })
       );
       toast({
