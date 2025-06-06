@@ -81,14 +81,17 @@ const NavbarPhone = ({ unread }: { unread: number }) => {
         unread
       }
     ];
-    // 管理员：返回完整菜单
-    if (menuControl) {
-      return fullNavbarList;
-    }
-    // 非管理员：保留 "知识库" (Datasets) 和 应用
-    else {
-      return fullNavbarList.filter((item) => item.label === t('common:navbar.Datasets'));
-    }
+    const fullNavbarList1 = [
+      {
+        label: t('common:navbar.Datasets'),
+        icon: 'core/dataset/datasetLight',
+        activeIcon: 'core/dataset/datasetFill',
+        link: `/dataset/list`,
+        activeLink: ['/dataset/list', '/dataset/detail'],
+        unread: 0
+      }
+    ];
+    return menuControl ? fullNavbarList : fullNavbarList1;
   }, [t, lastChatAppId, unread, menuControl]);
 
   return (
